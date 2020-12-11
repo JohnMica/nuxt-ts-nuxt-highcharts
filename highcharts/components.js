@@ -4,9 +4,9 @@ const highchartsProps = Object.freeze({
   mapChart(props, dfltOptions) {
     props.mapChart = {
       type: Object,
-      default: () => (dfltOptions.mapChart || {})
+      default: () => dfltOptions.mapChart || {},
     }
-  }
+  },
 })
 
 // To be deprecated:
@@ -19,14 +19,14 @@ const highchartsData = Object.freeze({
    * @param {object|string} [opts.mapData] - defaults to world geo map JSON
    */
   async mapChart({
-    mapName = 'myMapName', 
-    mapData = require('@highcharts/map-collection/custom/world.geo.json')
+    mapName = 'myMapName',
+    mapData = require('@highcharts/map-collection/custom/world.geo.json'),
   }) {
     if (typeof mapData === 'string') {
       mapData = await (await fetch(mapData)).json()
     }
     Highcharts.maps[mapName] = { ...mapData }
-  }
+  },
 })
 
 // To be deprecated:
@@ -41,7 +41,7 @@ const highchartsMods = Object.freeze({
     stockInit(HC)
     return { featureAdded: 'stockChart' }
   },
-  mapChart(HC) { 
+  mapChart(HC) {
     const { default: mapInit } = require('highcharts/modules/map')
     mapInit(HC)
     return { featureAdded: 'mapChart' }
@@ -62,21 +62,22 @@ if (!require.context) {
     console.log('mocked for testing')
   }
 }
-// @ts-ignore  
+// @ts-ignore
 const r = require.context('highcharts/modules', true, /\.js$/)
-const hcMods = r.keys()
+const hcMods = r
+  .keys()
   .filter((k) => !k.endsWith('.src.js'))
   .map((fName) => {
     const name = fName.replace(/(\.\/|\.js)/g, '')
     hcProps[name] = (dfltOptions) => {
       return {
         type: Object,
-        default: () => (dfltOptions[name] || {})
+        default: () => dfltOptions[name] || {},
       }
     }
-    return { 
+    return {
       name,
-      initializer: (HC) => r(fName)(HC)
+      initializer: (HC) => r(fName)(HC),
     }
   })
 
@@ -89,63 +90,62 @@ const hcData = Object.freeze({
    * @param {object|string} [opts.mapData] - defaults to world geo map JSON
    */
   async map({
-    mapName = 'myMapName', 
-    mapData = require('@highcharts/map-collection/custom/world.geo.json')
+    mapName = 'myMapName',
+    mapData = require('@highcharts/map-collection/custom/world.geo.json'),
   }) {
     if (typeof mapData === 'string') {
       mapData = await (await fetch(mapData)).json()
     }
     Highcharts.maps[mapName] = { ...mapData }
-  }
+  },
 })
 // ---
 
-export default function ComponentFactory(
-  variant = 'chart',
-  dfltOptions = {}
-) {
+export default function ComponentFactory(variant = 'chart', dfltOptions = {}) {
   const props = {
     options: {
       type: Object,
-      default: () => (dfltOptions.chartOptions || {})
+      default: () => dfltOptions.chartOptions || {},
     },
     redraw: {
       type: Boolean,
-      default: true
+      default: true,
     },
     oneToOne: {
       type: Boolean,
-      default: true
+      default: true,
     },
     animation: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     highcharts: {
       type: Object,
-      default: () => (Highcharts)
+      default: () => Highcharts,
     },
     exporting: {
       type: Boolean,
-      default: dfltOptions.exporting !== undefined ? dfltOptions.exporting : false
+      default:
+        dfltOptions.exporting !== undefined ? dfltOptions.exporting : false,
     },
     update: {
       type: Array,
-      default: () => ['options']
+      default: () => ['options'],
     },
     setOptions: {
       type: Object,
-      default: () => (dfltOptions.setOptions)
+      default: () => dfltOptions.setOptions,
     },
     modules: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   }
-  if (highchartsProps[variant]) { // <-- to be deprecated
-    /* Extend the props if a certain module requires it 
-    *  E.g., mapChart
-    */
+  if (highchartsProps[variant]) {
+    // <-- to be deprecated
+    /* Extend the props if a certain module requires it
+     *  E.g., mapChart
+     */
     highchartsProps[variant](props, dfltOptions)
   }
   Object.entries(hcProps).forEach(([prop, fn]) => {
@@ -154,19 +154,20 @@ export default function ComponentFactory(
     }
   })
   return {
-    render: createElement => createElement('div', {
-      ref: dfltOptions.ref || 'chart'
-    }),
+    render: (createElement) =>
+      createElement('div', {
+        ref: dfltOptions.ref || 'chart',
+      }),
     props,
     computed: {
       optsCopy() {
         return { ...this.options }
-      }
+      },
     },
     methods: {
       constructChart() {
         const HC = this.highcharts
-        const chartConstructor = HC[variant] || HC['chart']
+        const chartConstructor = HC[variant] || HC.chart
         this.chart = chartConstructor(
           this.$refs[dfltOptions.ref || 'chart'],
           this.optsCopy,
@@ -213,18 +214,21 @@ export default function ComponentFactory(
       updateAll(newValue) {
         this.chart.update(newValue, this.redraw, this.oneToOne, this.animation)
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       updateWatchers(watchers, oldWatchers) {
         this.unwatch.forEach((u) => u())
         this.unwatch = []
         this.update.forEach((watcher) => {
           const w = this[watcher] || this.updateAll
           if (watcher === 'options') {
-            this.unwatch.push(this.$watch(watcher, this.updateAll, { deep: true }))
+            this.unwatch.push(
+              this.$watch(watcher, this.updateAll, { deep: true })
+            )
           } else if (w && typeof w === 'function') {
             this.unwatch.push(this.$watch(watcher, w))
           }
         })
-      }
+      },
     },
     async mounted() {
       const HC = this.highcharts
@@ -274,6 +278,6 @@ export default function ComponentFactory(
     },
     beforeDestroy() {
       this.chart.destroy()
-    }
+    },
   }
 }
