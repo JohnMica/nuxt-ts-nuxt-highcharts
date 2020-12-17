@@ -6,63 +6,75 @@ import { nextTickP } from 'nuxt-test-utils'
 const dfltOptions = {
   chartOptions: {
     caption: {
-      text: 'Some caption'
+      text: 'Some caption',
     },
     chart: {
-      type: 'spline'
+      type: 'spline',
     },
-    xAxis: [{
-      title: {
-        text: 'xAxis title'
-      }
-    }],
-    yAxis: [{
-      title: {
-        text: 'Values'
-      }
-    }],
+    xAxis: [
+      {
+        title: {
+          text: 'xAxis title',
+        },
+      },
+    ],
+    yAxis: [
+      {
+        title: {
+          text: 'Values',
+        },
+      },
+    ],
     title: {
-      text: `Some title`
+      text: `Some title`,
     },
     subtitle: {
-      text: `Some subtitle`
+      text: `Some subtitle`,
     },
-    series: [{
-      name: 'My series',
-      data: [0, 1, 2, 3, 4]
-    }]
-  }
+    series: [
+      {
+        name: 'My series',
+        data: [0, 1, 2, 3, 4],
+      },
+    ],
+  },
 }
 
 const changedOptions = {
   chartOptions: {
     caption: {
-      text: 'changed caption'
+      text: 'changed caption',
     },
     chart: {
-      type: 'area'
+      type: 'area',
     },
-    xAxis: [{
-      title: {
-        text: 'xAxis title changed'
-      }
-    }],
-    yAxis: [{
-      title: {
-        text: 'changed Values'
-      }
-    }],
+    xAxis: [
+      {
+        title: {
+          text: 'xAxis title changed',
+        },
+      },
+    ],
+    yAxis: [
+      {
+        title: {
+          text: 'changed Values',
+        },
+      },
+    ],
     title: {
-      text: `changed title`
+      text: `changed title`,
     },
     subtitle: {
-      text: `changed subtitle`
+      text: `changed subtitle`,
     },
-    series: [{
-      name: 'changed series',
-      data: [4, 3, 2, 1, 0]
-    }]
-  }
+    series: [
+      {
+        name: 'changed series',
+        data: [4, 3, 2, 1, 0],
+      },
+    ],
+  },
 }
 
 test('Basic chart, empty opts', (t) => {
@@ -90,17 +102,19 @@ test('Basic chart, default options', async (t) => {
 
 test('Basic chart, specified watchers', async (t) => {
   const basicChart = ComponentFactory('chart', dfltOptions)
-  const watchers = Object.keys(basicChart.methods).filter((m) => m.includes('options'))
+  const watchers = Object.keys(basicChart.methods).filter((m) =>
+    m.includes('options')
+  )
   const optsCopy = { ...changedOptions.chartOptions }
   const wrapper = shallowMount(basicChart, {
     propsData: {
-      update: watchers
-    }
+      update: watchers,
+    },
   })
-  
+
   const ctx = wrapper.vm
   wrapper.setProps({
-    options: optsCopy
+    options: optsCopy,
   })
 
   await nextTickP(ctx)
@@ -113,26 +127,28 @@ test('Basic chart, specified watchers', async (t) => {
 
 test('Basic chart, specified watchers (mixed types)', async (t) => {
   const basicChart = ComponentFactory('chart', dfltOptions)
-  const watchers = Object.keys(basicChart.methods).filter((m) => m.includes('options'))
+  const watchers = Object.keys(basicChart.methods).filter((m) =>
+    m.includes('options')
+  )
   const optsCopy = { ...changedOptions.chartOptions }
   const wrapper = shallowMount(basicChart, {
     propsData: {
-      update: watchers
-    }
+      update: watchers,
+    },
   })
   wrapper.setProps({
     options: {
       xAxis: {
         title: {
-          text: 'xAxis title changed again'
-        }
+          text: 'xAxis title changed again',
+        },
       },
       yAxis: {
         title: {
-          text: 'changed Values again'
-        }
+          text: 'changed Values again',
+        },
       },
-    }
+    },
   })
 
   const ctx = wrapper.vm
@@ -146,37 +162,39 @@ test('Basic chart, specified watchers (xAxis and yAxis as objects)', async (t) =
     chartOptions: {
       xAxis: {
         title: {
-          text: 'xAxis title'
-        }
+          text: 'xAxis title',
+        },
       },
       yAxis: {
         title: {
-          text: 'yAxis title'
-        }
-      }
-    }
+          text: 'yAxis title',
+        },
+      },
+    },
   })
-  const watchers = Object.keys(basicChart.methods).filter((m) => m.includes('options'))
+  const watchers = Object.keys(basicChart.methods).filter((m) =>
+    m.includes('options')
+  )
   const wrapper = shallowMount(basicChart, {
     propsData: {
-      update: watchers
-    }
+      update: watchers,
+    },
   })
   const ctx = wrapper.vm
   const newOpts = {
     xAxis: {
       title: {
-        text: 'xAxis title changed again'
-      }
+        text: 'xAxis title changed again',
+      },
     },
     yAxis: {
       title: {
-        text: 'changed Values again'
-      }
-    }
+        text: 'changed Values again',
+      },
+    },
   }
   wrapper.setProps({ options: newOpts })
-  
+
   await nextTickP(ctx)
   t.is(ctx.chart.xAxis[0].options.title.text, newOpts.xAxis.title.text)
   t.is(ctx.chart.yAxis[0].options.title.text, newOpts.yAxis.title.text)
@@ -184,40 +202,56 @@ test('Basic chart, specified watchers (xAxis and yAxis as objects)', async (t) =
 
 test('Basic chart, specified watchers (new values undefined)', async (t) => {
   const basicChart = ComponentFactory('chart', dfltOptions)
-  const watchers = Object.keys(basicChart.methods).filter((m) => m.includes('options'))
+  const watchers = Object.keys(basicChart.methods).filter((m) =>
+    m.includes('options')
+  )
   const wrapper = shallowMount(basicChart, {
     propsData: {
-      update: watchers
-    }
+      update: watchers,
+    },
   })
   const ctx = wrapper.vm
   wrapper.setProps({ options: {} })
-  
+
   await nextTickP(ctx)
-  t.is(ctx.chart.xAxis[0].options.title.text, dfltOptions.chartOptions.xAxis[0].title.text)
-  t.is(ctx.chart.yAxis[0].options.title.text, dfltOptions.chartOptions.yAxis[0].title.text)
+  t.is(
+    ctx.chart.xAxis[0].options.title.text,
+    dfltOptions.chartOptions.xAxis[0].title.text
+  )
+  t.is(
+    ctx.chart.yAxis[0].options.title.text,
+    dfltOptions.chartOptions.yAxis[0].title.text
+  )
 })
 
 test('Basic chart, nonexistant watchers', async (t) => {
   const basicChart = ComponentFactory('chart', dfltOptions)
-  const watchers = Object.keys(basicChart.methods).filter((m) => m.includes('options'))
+  const watchers = Object.keys(basicChart.methods).filter((m) =>
+    m.includes('options')
+  )
   const wrapper = shallowMount(basicChart, {
     propsData: {
-      update: ['nonexistant', 'chart']
-    }
+      update: ['nonexistant', 'chart'],
+    },
   })
   const ctx = wrapper.vm
   const newOpts = {
-    title: { text: 'new text' }
+    title: { text: 'new text' },
   }
   wrapper.setProps({ options: newOpts })
-  
-  await nextTickP(ctx)
-  t.is(ctx.chart.xAxis[0].options.title.text, dfltOptions.chartOptions.xAxis[0].title.text)
-  t.is(ctx.chart.yAxis[0].options.title.text, dfltOptions.chartOptions.yAxis[0].title.text)
 
-  wrapper.setProps({ 
-    update: []
+  await nextTickP(ctx)
+  t.is(
+    ctx.chart.xAxis[0].options.title.text,
+    dfltOptions.chartOptions.xAxis[0].title.text
+  )
+  t.is(
+    ctx.chart.yAxis[0].options.title.text,
+    dfltOptions.chartOptions.yAxis[0].title.text
+  )
+
+  wrapper.setProps({
+    update: [],
   })
   await nextTickP(ctx)
   t.is(ctx.unwatch.length, 0)
@@ -248,27 +282,27 @@ test('Map chart (mapData as a url)', async (t) => {
   const mapChart = ComponentFactory('mapChart', dfltOptions)
   let fetched
   // @ts-ignore
-  global.fetch = async function(url) {
+  global.fetch = async function (url) {
     fetched = url
-    return({
-      json: () => ({ title: 'testData' })
-    })
+    return {
+      json: () => ({ title: 'testData' }),
+    }
   }
   const wrapper = shallowMount(mapChart, {
     propsData: {
       mapChart: {
         mapName: 'providedMap',
-        mapData: '/path/to/map.json'
-      }
-    }
+        mapData: '/path/to/map.json',
+      },
+    },
   })
   const ctx = wrapper.vm
   await nextTickP(ctx)
   t.is(fetched, '/path/to/map.json')
   // @ts-ignore
-  t.truthy(ctx.highcharts.maps['providedMap'])
+  t.truthy(ctx.highcharts.maps.providedMap)
   // @ts-ignore
-  t.is(ctx.highcharts.maps['providedMap'].title, 'testData')
+  t.is(ctx.highcharts.maps.providedMap.title, 'testData')
 })
 
 test('Sunburst chart', (t) => {
@@ -282,7 +316,7 @@ test('Destroy chart if it exists', (t) => {
   const basicChart = ComponentFactory()
   const wrapper = shallowMount(basicChart, {})
   const ctx = wrapper.vm
-  ctx.$destroy() 
+  ctx.$destroy()
   t.is(Object.keys(ctx.chart).length, 0)
 })
 
@@ -292,29 +326,32 @@ test('Set Options', (t) => {
     propsData: {
       setOptions: {
         lang: {
-          decimalPoint: ','
-        }
-      }
-    }
+          decimalPoint: ',',
+        },
+      },
+    },
   })
-  const ctx = wrapper.vm  
+  const ctx = wrapper.vm
   // @ts-ignore
   const opts = ctx.highcharts.getOptions()
   t.is(opts.lang.decimalPoint, ',')
 })
 
-test.only('Modules (tbd)', (t) => { // TBD: update...(mock require.context)
+test.only('Modules (tbd)', (t) => {
+  // TBD: update...(mock require.context)
   const basicChart = ComponentFactory()
   const modules = ['heatmap', 'map']
   const wrapper = shallowMount(basicChart, {
-    propsData: { modules }
+    propsData: { modules },
   })
   const ctx = wrapper.vm
   modules.forEach((mod) => {
     // @ts-ignore
-    t.true(ctx.highcharts._modules.hasOwnProperty(`masters/modules/${mod}.src.js`))
+    t.true(
+      ctx.highcharts._modules.hasOwnProperty(`masters/modules/${mod}.src.js`)
+    )
   })
 
   // @ts-ignore
-  t.truthy(ctx.highcharts.maps['myMapName'])
+  t.truthy(ctx.highcharts.maps.myMapName)
 })

@@ -1,5 +1,5 @@
-import test from 'ava'
 import { resolve as pResolve } from 'path'
+import test from 'ava'
 import { getModuleOptions, ModuleContext, PluginContext } from 'nuxt-test-utils'
 import config from '@/nuxt.config'
 import Module from '@/highcharts/module'
@@ -15,8 +15,8 @@ test('Module: adds plugin with configured options', async (t) => {
     compileOpts: {
       src: pResolve('./highcharts/plugin.js'),
       tmpFile,
-      overwrite: true
-    }
+      overwrite: true,
+    },
   })
   ctx.registerModule()
   t.truthy(ctx.pluginAdded)
@@ -29,7 +29,7 @@ test('Module: adds plugin with configured options', async (t) => {
   t.is(ctx.templateAdded.src, pResolve('./highcharts/components.js'))
   t.is(ctx.templateAdded.fileName, 'nuxt-highcharts/components.js')
 
-  const { default: _Plugin, pOptions: _pOptions} = await import(tmpFile)
+  const { default: _Plugin, pOptions: _pOptions } = await import(tmpFile)
   pOptions = _pOptions
   Plugin = _Plugin
 })
@@ -37,12 +37,12 @@ test('Module: adds plugin with configured options', async (t) => {
 test('Plugin', (t) => {
   const ctx = new PluginContext(Plugin)
   t.truthy(ctx.injected)
-  t.truthy(ctx.injected['highcharts'])
-  const $highcharts = ctx.injected['highcharts']
-  t.truthy($highcharts.chartTypes) 
+  t.truthy(ctx.injected.highcharts)
+  const $highcharts = ctx.injected.highcharts
+  t.truthy($highcharts.chartTypes)
   t.truthy($highcharts.components)
   t.truthy($highcharts.variants)
-  
+
   const instance = $highcharts({})
   t.is(typeof instance, 'object')
 })
